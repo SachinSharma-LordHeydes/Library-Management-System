@@ -1,3 +1,5 @@
+"use client";
+
 import { 
   Twitter, 
   Instagram, 
@@ -6,10 +8,14 @@ import {
   Phone, 
   FacebookIcon
 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 const FooterSection = () => {
+
+  const path=usePathname();
+
   return (
-    <div>
+    <div className={`${path==="/contact"&&"hidden"} ${path==="/dashboard"&&"hidden"}`}>
       <div className="bg-black py-10 px-6">
         <footer className="flex flex-col md:flex-row gap-10 md:gap-32 justify-center w-full text-center md:text-left">
           <ul className="flex-1">

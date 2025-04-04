@@ -61,7 +61,7 @@ export default function VerticalMarquee({dureation}) {
         className="flex flex-col gap-8 "
       >
         {[...images, ...images].map((img, i) => (
-          <div key={i} className="w-52 h-64 relative">
+          <div key={i} className="w-44 h-56 md:w-53 md:h-64 relative">
             <img
               src={img}
               alt={`Item ${i}`}

@@ -7,21 +7,21 @@ import PotentialSection from "@/components/sections/home_page/PotentialSection";
 export default function Home() {
   return (
     <div className="">
-      <div className="bg-[#E6DFC5] text-[#3D2C1D]  min-w-fit ">
+      <div className="bg-[#E6DFC5] text-[#3D2C1D]  ">
         {/* Hero Section */}
-        <div className="flex justify-center items-center h-[100vh] w-full ">
+        <div className="flex justify-center items-center sm:h-[100vh] w-full  ">
           <HeroSection />
         </div>
 
         {/* Potential Section */}
-        <div className="mb-32">
+        <div className="mb-32 ">
           <PotentialSection />
         </div>
 
         {/* Genres Section  */}
-        {/* <div className="mb-32">
+        <div className="mb-32">
           <GenreSection />
-        </div> */}
+        </div>
       </div>
     </div>
   );

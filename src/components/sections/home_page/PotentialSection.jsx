@@ -2,9 +2,9 @@ import ChangeTextColour from "@/components/ui/ChangeTextColour";
 
 const PotentialSection = () => {
   return (
-    <div>
+    <div className="flex justify-center items-center  mx-auto">
       <div className="flex md:justify-between md:flex-row flex-col justify-center max-sm:items-center md:gap-x-2 ">
-        <div className="w-[90%] ">
+        <div className="md:w-[90%] w-full ">
           <div className="text-4xl lg:text-5xl">
             <h1>
               Unlock{" "}

@@ -7,11 +7,11 @@ import { ArrowRight } from "lucide-react";
 
 const HeroSection = () => {
   return (
-    <div className="felx justify-center ">
+    <div className="felx justify-center max-sm:my-28">
       <div className="flex md:justify-between md:flex-row flex-col justify-center sm:items-center md:gap-x-2">
-        <div className="flex items-center">
+        <div className="flex justify-center items-center">
           <div className="w-[90%] md:block max-sm:flex max-sm:flex-col max-sm:justify-center max-sm:items-center">
-            <div className="text-4xl lg:text-5xl">
+            <div className="text-3xl lg:text-5xl ">
               <h1 className="">
                 Your Next
                 <ChangeTextColour style={"text-[#DD7500] font-bold"}>
@@ -41,7 +41,7 @@ const HeroSection = () => {
           </div>
         </div>
         <div className="w-fit flex md:justify-end sm:mt-16 max-sm:w-full max-sm:justify-center max-sm:items-center">
-          <div className="flex gap-x-9">
+          <div className="flex gap-x-2 md:gap-x-9">
             <div>
               <SwiperMarquee dureation={30} />
             </div>
