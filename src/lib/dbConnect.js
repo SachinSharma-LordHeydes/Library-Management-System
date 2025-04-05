@@ -1,14 +1,18 @@
-import mongoose from "mongoose";
+// Check the implementation of your dbConnect function
+// It should look something like this:
+import mongoose from 'mongoose';
 
-const DB_URL = process.env.DB_URL;
-
-const dbConnect = async () => {
+export default async function dbConnect() {
   try {
-    const dbConnectResponse = await mongoose.connect(DB_URL);
-    if (dbConnectResponse) console.log("Data Base Connected Succesfully");
+    if (mongoose.connection.readyState >= 1) {
+      return;
+    }
+    
+    console.log("Connecting to MongoDB...");
+    await mongoose.connect(process.env.DB_URL);
+    console.log("Connected to MongoDB successfully");
   } catch (error) {
-    console.log("Unable to Connect with Data base!! error--->", error);
+    console.error("MongoDB connection error:", error);
+    throw error;
   }
-};
-
-export default dbConnect;
+}
