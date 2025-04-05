@@ -23,9 +23,18 @@ export async function POST(req) {
   const eventType = evt.type;
   const eventData = evt.data;
 
+  const { email_addresses, first_name, image_url, id } = evt.data;
+
+    const newUser = {
+      email:email_addresses,
+      userName:first_name,
+      imageURL:image_url,
+      clerkID:id,
+    };
+
   switch (eventType) {
     case 'user.created':
-      await UserModel.create(eventData);
+      await UserModel.create(newUser);
       break;
     case 'user.updated':
       await UserModel.updateOne({ clerkID: eventData.id }, eventData);
