@@ -7,7 +7,7 @@ console.log(useAuth);
 
 const NavBar = async () => {
 
-  const userDataResponse=await fetch(http://googel.com)
+  const userDataResponse=await fetch()
 
   return (
     <div className="fixed w-full top-0 left-0 z-50">
