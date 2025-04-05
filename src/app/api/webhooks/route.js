@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import UserModel from '@/app/models/userModel';
 import { Webhook } from 'svix';
+import { NextRequest, NextResponse } from 'next/server';
 
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
@@ -32,9 +33,32 @@ export async function POST(req) {
       clerkID:id,
     };
 
+    if(eventType==='user.created'){
+      try {
+        const creatUserResponse=await createUser(newUser);
+        console.log('create User Response-->',creatUserResponse)
+
+        if(creatUserResponse){
+          return NextResponse.json({
+            success:true,
+            messsage:"User Created Successfully",
+            data:creatUserResponse
+          })
+        }
+      } catch (error) {
+        return NextResponse.json({
+          success:false,
+          messsage:"Error while Creating user",
+          error:error.message
+        })
+      }
+     
+      
+    }
+
   switch (eventType) {
     case 'user.created':
-      await UserModel.create(newUser);
+      await createUser(newUser);
       break;
     case 'user.updated':
       await UserModel.updateOne({ clerkID: eventData.id }, eventData);
