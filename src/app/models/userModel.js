@@ -8,6 +8,11 @@ const userSchema = new mongoose.Schema(
       maxLength: 50,
       minLength: 1,
     },
+    clerkId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     email: {
       type: String,
       required: true,
