@@ -1,14 +1,9 @@
-import { useAuth } from "@clerk/nextjs";
+
 import DropDown from "./navbar/DropDown";
 import LoginSignUp from "./navbar/LoginSignUp";
 import Navigation from "./navbar/Navigation";
 
-console.log(useAuth);
-
-const NavBar = async () => {
-
-  // const userDataResponse=await fetch()
-
+const NavBar = () => {
   return (
     <div className="fixed w-full top-0 left-0 z-50">
       <div className="bg-[#CFB68C] mx-auto w-full ">

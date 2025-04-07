@@ -10,10 +10,10 @@ export async function POST(req) {
 
   const wh = new Webhook(SIGNING_SECRET); // Initialize with correct secret
 
-  console.log(wh)
+  console.log("web hoook-->", wh);
 
   // Get headers
-  const headerPayload =await headers();
+  const headerPayload = await headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
@@ -35,7 +35,9 @@ export async function POST(req) {
     // Handle user.created event
     if (evt.type === "user.created") {
       const { id, email_addresses, first_name, image_url } = evt.data;
-      
+
+      // console.log("Event Data--->",evt.data)
+
       // Extract email safely
       const email = email_addresses?.[0]?.email_address;
       if (!email) {
@@ -53,6 +55,17 @@ export async function POST(req) {
 
       // Save to MongoDB
       const createdUser = await createUser(newUser);
+
+      if (createdUser) {
+        await (
+          await clerkClient()
+        ).users.updateUserMetadata(userInfo.id, {
+          publicMetadata: {
+            userId: createdUser._id,
+          },
+        });
+      }
+
       return NextResponse.json({ user: createdUser }, { status: 201 });
     }
 

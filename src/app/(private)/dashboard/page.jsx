@@ -1,20 +1,21 @@
+import UserModel from "@/app/models/userModel";
+import AdminDashboardPage from "@/components/pages/AdminDashboardPage";
+import UserDashboardPage from "@/components/pages/UserDashboard";
+import { auth } from "@clerk/nextjs/server";
 
-import GetUserImage from '@/components/sections/dashboard/GetUserImage'
-import React from 'react'
+const DashboardPage = async () => {
+  const { userId } = await auth();
 
-const dashboardPage = () => {
-  
+  const userData = await UserModel.findOne({ clerkId: userId });
+  console.log("user Data-->", userData);
+
   return (
-    <div className='text-xl'>
-      <div>
-        <h1 className='text-4xl font-bold tracking-wide '>Dashboard </h1>
-      </div>
+    <div>
+      {userData?.role === "student" && <UserDashboardPage />}
 
-      <div className='mt-9'>
-        <GetUserImage/>
-      </div>
+      {userData?.role === "admin" && <AdminDashboardPage />}
     </div>
-  )
-}
+  );
+};
 
-export default dashboardPage
+export default DashboardPage;

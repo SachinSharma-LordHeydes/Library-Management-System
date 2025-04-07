@@ -4,7 +4,7 @@ export const screenSizeNavdata = [
     Link: "/dashboard",
   },
   {
-    Navigation: "Search Books",
+    Navigation: "about",
     Link: "/about",
   },
   {

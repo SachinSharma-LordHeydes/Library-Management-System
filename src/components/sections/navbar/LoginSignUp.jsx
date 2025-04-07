@@ -15,9 +15,26 @@ import {
 
 import { AlignJustify } from "lucide-react";
 import Link from "next/link";
-import { screenSizeNavdata } from "../../../../public/navbar/screenSizeNavdata";
 
-const LoginSignUp = () => {
+import UserModel from "@/app/models/userModel";
+import dbConnect from "@/lib/dbConnect";
+import { auth } from "@clerk/nextjs/server";
+import { dashboardNavigation } from "../../../../public/dashboard/dashboardNavigation";
+
+console.log("user name-->", auth());
+
+const LoginSignUp = async () => {
+  await dbConnect();
+  const { userId } = await auth();
+  console.log("user id-->", await auth());
+  const userData = await UserModel.findOne({ clerkId: userId });
+  console.log("dashboard unfilterd-->", dashboardNavigation, userData);
+  const dashboardNavigationFiltered = dashboardNavigation.filter(
+    (user) => user.role === userData?.role || user.role === ""
+  );
+
+  console.log("dashboard accorfing yo role-->", dashboardNavigationFiltered);
+
   return (
     <div>
       <div className="">
@@ -25,7 +42,10 @@ const LoginSignUp = () => {
           <div>
             <header className="flex justify-end items-center p-4 gap-4 h-16">
               <SignedOut>
-                <SignInButton className="hidden md:block" />
+                <SignInButton
+                  forceRedirectUrl="/dashboard"
+                  className="hidden md:block"
+                />
                 <SignUpButton className="hidden md:block" />
               </SignedOut>
               <SignedIn>
@@ -36,7 +56,7 @@ const LoginSignUp = () => {
                   </SheetTrigger>
                   <SheetContent className="bg-[#E1DCC5]">
                     <div className="px-4 pt-12">
-                      {screenSizeNavdata.map((navigation, index) => (
+                      {dashboardNavigationFiltered?.map((navigation, index) => (
                         <div key={index}>
                           <SheetClose asChild>
                             <Link
