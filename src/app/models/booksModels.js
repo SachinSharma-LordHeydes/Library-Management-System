@@ -14,13 +14,12 @@ const booksSchema = new mongoose.Schema(
       required: true,
     },
     bookAuthor: {
-      type: mongoose.Types.ObjectId,
-      ref: "authorModel",
+      type: String,
       required: true,
     },
     bookImageURL: {
       type: String,
-      required: true, 
+      required: true,
     },
     authorImageURL: {
       type: String,
@@ -31,11 +30,6 @@ const booksSchema = new mongoose.Schema(
       type: String,
       minLength: 5,
       maxLength: 100,
-    },
-    bookPublication: {
-      type: String,
-      required: false,
-      default: "unknown",
     },
     booksQuantity: {
       type: Number,
@@ -58,6 +52,21 @@ const booksSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+
+booksSchema.pre("save", function (next) {
+  if (
+    this.status === "returned" &&
+    this.returnedDate &&
+    this.returnedDate > this.dueDate
+  ) {
+    const daysLate = Math.ceil(
+      (this.returnedDate - this.dueDate) / (1000 * 60 * 60 * 24)
+    );
+    this.fine = daysLate * 10; // 10 per day late
+  }
+  next();
+});
 
 const BooksModel =
   mongoose.models.BooksModel || mongoose.model("BooksModel", booksSchema);

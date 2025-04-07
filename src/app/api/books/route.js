@@ -2,9 +2,82 @@ import BooksModel from "@/app/models/booksModels";
 import dbConnect from "@/lib/dbConnect";
 import { NextResponse } from "next/server";
 
+
+// export async function POST(req) {
+//   try {
+//     await dbConnect();
+
+//     // Parse multipart form data
+//     const formData = await req.formData();
+//     const bookTitle = formData.get("bookTitle");
+//     const bookCatagory = formData.get("bookCatagory");
+//     const bookAuthor = formData.get("bookAuthor");
+//     const bookImageFile = formData.get("bookImageURL");
+//     const authorImageFile = formData.get("authorImageURL");
+//     const bookDescription = formData.get("bookDescription");
+//     const bookPublication = formData.get("bookPublication");
+//     const booksQuantity = formData.get("booksQuantity");
+
+//     if (
+//       !bookTitle ||
+//       !bookCatagory ||
+//       !bookAuthor ||
+//       !bookImageFile ||
+//       !authorImageFile ||
+//       !bookDescription ||
+//       !bookPublication ||
+//       !booksQuantity
+//     ) {
+//       return NextResponse.json({
+//         success: false,
+//         message: "All fields are required",
+//       });
+//     }
+
+//     const bookImageURL = "/path/to/uploaded/book-image.jpg"; // Replace with actual logic
+//     const authorImageURL = "/path/to/uploaded/author-image.jpg"; // Replace with actual logic
+
+//     const createBookResponse = await BooksModel.create({
+//       bookTitle,
+//       bookCatagory,
+//       bookAuthor,
+//       bookImageURL,
+//       authorImageURL,
+//       bookDescription,
+//       bookPublication,
+//       booksQuantity,
+//     });
+
+//     if (!createBookResponse) {
+//       return NextResponse.json({
+//         success: false,
+//         message: "Error occurred while creating book details",
+//       });
+//     }
+
+//     return NextResponse.json({
+//       success: true,
+//       message: "Book details created successfully",
+//       data: createBookResponse,
+//     });
+//   } catch (error) {
+//     return NextResponse.json({
+//       success: false,
+//       message: "Error occurred while adding book details",
+//       error: error.message || "Unknown error",
+//     });
+//   }
+// }
+
+
 export async function POST(req) {
   try {
-    dbConnect();
+    // Establish database connection
+    await dbConnect();
+    console.log("Database connected successfully");
+
+    // Parse JSON data
+    const data = await req.json();
     const {
       bookTitle,
       bookCatagory,
@@ -12,10 +85,20 @@ export async function POST(req) {
       bookImageURL,
       authorImageURL,
       bookDescription,
-      bookPublication,
-      booksQuantity,
-    } = await req.json();
+      booksQuantity
+    } = data;
 
+    console.log("Received book data:", {
+      bookTitle,
+      bookCatagory,
+      bookAuthor,
+      bookImageURL: bookImageURL ? "URL received" : "Missing",
+      authorImageURL: authorImageURL ? "URL received" : "Missing",
+      bookDescription: bookDescription ? "Text received" : "Missing",
+      booksQuantity
+    });
+
+    // Validate required fields
     if (
       !bookTitle ||
       !bookCatagory ||
@@ -23,25 +106,17 @@ export async function POST(req) {
       !bookImageURL ||
       !authorImageURL ||
       !bookDescription ||
-      !bookPublication ||
       !booksQuantity
     ) {
+      console.log("Validation failed - missing fields");
       return NextResponse.json({
         success: false,
-        message: "all fields are required",
-        fields: {
-          bookTitle,
-          bookCatagory,
-          bookAuthor,
-          bookImageURL,
-          authorImageURL,
-          bookDescription,
-          bookPublication,
-          booksQuantity,
-        },
-      });
+        message: "All fields are required",
+      }, { status: 400 });
     }
 
+    // Create the book document
+    console.log("Attempting to create book document");
     const createBookResponse = await BooksModel.create({
       bookTitle,
       bookCatagory,
@@ -49,30 +124,23 @@ export async function POST(req) {
       bookImageURL,
       authorImageURL,
       bookDescription,
-      bookPublication,
-      booksQuantity,
+      booksQuantity: Number(booksQuantity), // Convert to number if needed
     });
 
-    console.log("Create book response----->", createBookResponse);
-
-    if (!createBookResponse) {
-      return NextResponse.json({
-        success: false,
-        message: "Error occured while creating books details",
-      });
-    }
+    console.log("Book created successfully:", createBookResponse._id);
 
     return NextResponse.json({
       success: true,
       message: "Book details created successfully",
       data: createBookResponse,
-    });
+    }, { status: 201 });
   } catch (error) {
+    console.error("Error in POST /api/books:", error);
     return NextResponse.json({
       success: false,
-      message: "Error occured while adding books details",
-      error: error.message,
-    });
+      message: "Error occurred while adding book details",
+      error: error.message || "Unknown error",
+    }, { status: 500 });
   }
 }
 

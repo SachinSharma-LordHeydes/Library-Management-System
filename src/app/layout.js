@@ -23,6 +23,7 @@ export default function RootLayout({ children }) {
         <body
           className={`${inriaSans.className} antialiased min-w-screen min-h-screen overflow-x-hidden bg-[#E6DFC5] text-black`}
         >
+          {/* f9f9f9 */}
           <NavBar />
           <div 
           // className="md:w-[80%]  sm:px-5 max-sm:px-5 mx-auto"

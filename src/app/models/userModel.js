@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import BooksModel from "@/app/models/booksModels";
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,10 +32,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true, ////https://ui-avatars.com/api/?name=Sachin
     },
+    fine: {
+      type: Number,
+      default: 0,
+    },
     borrowedBooks: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "ReservedBookModel",
+        ref: "BooksModel",
       },
     ],
   },

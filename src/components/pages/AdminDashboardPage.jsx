@@ -2,6 +2,7 @@ import UserModel from "@/app/models/userModel";
 import { auth } from "@clerk/nextjs/server";
 import { Image } from "lucide-react";
 
+import BooksModel from "@/app/models/booksModels";
 import {
   Table,
   TableBody,
@@ -11,30 +12,53 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import OverdueComponent from "../OverdueComponent";
+import AddbookSection from "../sections/dashboard/AddbookSection";
 
 const AdminDashboardPage = async () => {
   const { userId } = await auth();
 
-  const userData = await UserModel.findOne({ clerkId: userId });
+  const userData = await UserModel.find().populate("borrowedBooks");
+  console.log("user Data---->",userData)
+  const bookData = await BooksModel.find();
+  const splicedBookData = bookData.slice(-5);
+  const plainBooks = JSON.parse(JSON.stringify(splicedBookData));
+
+  const studentData = userData.filter((data) => data.role === "student");
+
+  const totalNumbersOfUsers = userData.length;
+  console.log("Total Number of users--->", totalNumbersOfUsers);
+
+  const overDuedBooks=bookData.filter((data)=>data.cr)
+
+  const splicedStudentData = studentData.slice(-5);
+  const splicedUserData = userData.slice(-5);
+
+  let totalBorrowedBooks = 0;
+  userData.forEach(user => {
+    totalBorrowedBooks += user.borrowedBooks?.length;
+  });
+
+  console.log("total books borrowed-->", totalBorrowedBooks);
 
   const randData = [
     {
-      title: "Total Users0",
+      title: "Total Users",
+      value: totalNumbersOfUsers,
+      icon: <Image size={32} />,
+    },
+    {
+      title: "Borrowed Books",
+      value: totalBorrowedBooks,
+      icon: <Image size={32} />,
+    },
+    {
+      title: "Overdue Books",
       value: "1223",
       icon: <Image size={32} />,
     },
     {
-      title: "Total Users1",
-      value: "1223",
-      icon: <Image size={32} />,
-    },
-    {
-      title: "Total Users2",
-      value: "1223",
-      icon: <Image size={32} />,
-    },
-    {
-      title: "Total Users3",
+      title: "New Members",
       value: "1223",
       icon: <Image size={32} />,
     },
@@ -47,11 +71,12 @@ const AdminDashboardPage = async () => {
           Hello,<p className="text-orange-500">Sachin</p>!
         </pre>
       </div>
+
       {/* grid section  */}
       <div className="flex flex-wrap md:flex-nowrap gap-y-5  gap-x-3 mx-auto md:justify-between justify-center items-center my-9 md:mt-16 lg:mt-24">
         {randData.map((data, index) => (
           <div
-            className="px-4   py-5 bg-white rounded-md shadow-2xl"
+            className="px-4 py-5 md:w-[380px] bg-white rounded-md shadow-2xl"
             key={index}
           >
             <div className="flex justify-between items-center gap-x-5 md:gap-x-9 lg:gap-x-16">
@@ -62,58 +87,67 @@ const AdminDashboardPage = async () => {
                 {data.icon}
               </div>
             </div>
-            <div className="mt-5 text-lg md:text-xl lg:text-2xl ">
-              {data.title}
-            </div>
+            <div className="mt-5 text-md md:text-lg ">{data.title}</div>
           </div>
         ))}
       </div>
 
       {/* table section  */}
 
-      <div className="flex flex-wrap md:flex-nowrap gap-5 justify-between items-center mt-16 " >
-        <div className="bg-white rounded-md shadow-2xl text-white md:w-[50%] w-full">
+      <div className="flex flex-wrap md:flex-nowrap gap-5 justify-between items-center mt-16 ">
+        <div className="bg-white rounded-md shadow-2xl text-white md:w-[47%] w-full">
+          <div className="flex justify-between px-3 py-4 text-lg text-black font-bold tracking-wider">
+            <div className="py-1">User Lists</div>
+          </div>
           <Table>
             <TableCaption></TableCaption>
             <TableHeader>
               <TableRow className={`text-white`}>
                 <TableHead className="w-[100px]">User ID</TableHead>
                 <TableHead>User Name</TableHead>
-                <TableHead>Book Issued</TableHead>
+                <TableHead>Book Borrowed</TableHead>
                 <TableHead className="text-right">Department</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className={`text-black`}>
-                <TableCell className="font-medium k">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
+              {splicedStudentData.map((data, index) => (
+                <TableRow key={index} className={`text-black`}>
+                  <TableCell className="font-medium k">{data._id}</TableCell>
+                  <TableCell className="font-medium k">
+                    {data.userName}
+                  </TableCell>
+                  <TableCell className="font-medium k">
+                    {data.borrowedBooks[0]?.bookTitle ? (
+                      <div>{data.borrowedBooks[0]?.bookTitle}</div>
+                    ) : (
+                      <div>unknown</div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium text-right">
+                    {data.faculty ? (
+                      <div>{data.faculty}</div>
+                    ) : (
+                      <div>unknown</div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
+          <div className="  flex justify-end mb-2 px-3">
+            <div className="bg-black rounded-md px-2 py-1  cursor-pointer hover:shadow-2xl hover:scale-97 hover:transition-all">
+              See All
+            </div>
+          </div>
         </div>
-        <div className="bg-[#C7A061] rounded-md shadow-2xl text-white md:w-[50%] w-full">
-          <Table>
-            <TableCaption></TableCaption>
-            <TableHeader>
-              <TableRow className={`text-white`}>
-                <TableHead className="w-[100px]">Book ID</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Author</TableHead>
-                <TableHead className="text-right">Avilable</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell className="text-right">$250.00</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+        {/* -------------- */}
+        <div className="bg-white rounded-md shadow-2xl text-white md:w-[47%] w-full">
+          <AddbookSection bookData={plainBooks} />
         </div>
+      </div>
+
+      <div>
+        <OverdueComponent />
       </div>
     </div>
   );
