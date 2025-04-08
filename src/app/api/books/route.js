@@ -1,7 +1,6 @@
-import BooksModel from "@/app/models/booksModels";
+import BooksModel from "@/app/models/booksModel";
 import dbConnect from "@/lib/dbConnect";
 import { NextResponse } from "next/server";
-
 
 // export async function POST(req) {
 //   try {
@@ -69,7 +68,6 @@ import { NextResponse } from "next/server";
 //   }
 // }
 
-
 export async function POST(req) {
   try {
     // Establish database connection
@@ -85,7 +83,7 @@ export async function POST(req) {
       bookImageURL,
       authorImageURL,
       bookDescription,
-      booksQuantity
+      booksQuantity,
     } = data;
 
     console.log("Received book data:", {
@@ -95,7 +93,7 @@ export async function POST(req) {
       bookImageURL: bookImageURL ? "URL received" : "Missing",
       authorImageURL: authorImageURL ? "URL received" : "Missing",
       bookDescription: bookDescription ? "Text received" : "Missing",
-      booksQuantity
+      booksQuantity,
     });
 
     // Validate required fields
@@ -109,10 +107,13 @@ export async function POST(req) {
       !booksQuantity
     ) {
       console.log("Validation failed - missing fields");
-      return NextResponse.json({
-        success: false,
-        message: "All fields are required",
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "All fields are required",
+        },
+        { status: 400 }
+      );
     }
 
     // Create the book document
@@ -129,18 +130,24 @@ export async function POST(req) {
 
     console.log("Book created successfully:", createBookResponse._id);
 
-    return NextResponse.json({
-      success: true,
-      message: "Book details created successfully",
-      data: createBookResponse,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Book details created successfully",
+        data: createBookResponse,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error in POST /api/books:", error);
-    return NextResponse.json({
-      success: false,
-      message: "Error occurred while adding book details",
-      error: error.message || "Unknown error",
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Error occurred while adding book details",
+        error: error.message || "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -185,12 +192,11 @@ export async function GET(req) {
 
     const bookID = req.nextUrl.searchParams.get("bookID");
 
-    
     let getBooksDetailResponse;
-    
+
     if (bookID) {
       console.log("bookID received --->", bookID);
-      const _id=bookID
+      const _id = bookID;
       getBooksDetailResponse = await BooksModel.findById(_id);
       if (!getBooksDetailResponse) {
         return NextResponse.json(

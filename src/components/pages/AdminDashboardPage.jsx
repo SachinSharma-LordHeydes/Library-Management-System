@@ -2,7 +2,7 @@ import UserModel from "@/app/models/userModel";
 import { auth } from "@clerk/nextjs/server";
 import { Image } from "lucide-react";
 
-import BooksModel from "@/app/models/booksModels";
+import BooksModel from "@/app/models/booksModel";
 import {
   Table,
   TableBody,
@@ -18,8 +18,15 @@ import AddbookSection from "../sections/dashboard/AddbookSection";
 const AdminDashboardPage = async () => {
   const { userId } = await auth();
 
-  const userData = await UserModel.find().populate("borrowedBooks");
-  console.log("user Data---->",userData)
+  const userData = await UserModel.find().populate({
+    path: "borrowedBooks",
+    populate: {
+      path: "bookID",
+      model: "BooksModel",
+    }
+  });
+
+  console.log("user Data---->", userData);
   const bookData = await BooksModel.find();
   const splicedBookData = bookData.slice(-5);
   const plainBooks = JSON.parse(JSON.stringify(splicedBookData));
@@ -29,13 +36,13 @@ const AdminDashboardPage = async () => {
   const totalNumbersOfUsers = userData.length;
   console.log("Total Number of users--->", totalNumbersOfUsers);
 
-  const overDuedBooks=bookData.filter((data)=>data.cr)
+  // const overDuedBooks = bookData.filter((data) => data.cr);
 
   const splicedStudentData = studentData.slice(-5);
   const splicedUserData = userData.slice(-5);
 
   let totalBorrowedBooks = 0;
-  userData.forEach(user => {
+  userData.forEach((user) => {
     totalBorrowedBooks += user.borrowedBooks?.length;
   });
 
@@ -117,8 +124,10 @@ const AdminDashboardPage = async () => {
                     {data.userName}
                   </TableCell>
                   <TableCell className="font-medium k">
-                    {data.borrowedBooks[0]?.bookTitle ? (
-                      <div>{data.borrowedBooks[0]?.bookTitle}</div>
+                    {data.borrowedBooks[0].bookID.bookTitle ? (
+                      <div>
+                        {data.borrowedBooks[0].bookID.bookTitle}
+                      </div>
                     ) : (
                       <div>unknown</div>
                     )}

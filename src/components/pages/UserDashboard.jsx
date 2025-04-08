@@ -1,8 +1,9 @@
 import UserModel from "@/app/models/userModel";
 import { auth } from "@clerk/nextjs/server";
-import PieChartComponent from "../ui/PieChart";
-import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
 import Image from "next/image";
+import CreateProfileModal from "../ui/CreateProfileModal";
+import { InfiniteMovingCards } from "../ui/infinite-moving-cards";
+import PieChartComponent from "../ui/PieChart";
 
 const items = [
   {
@@ -39,14 +40,14 @@ const items = [
 const UserDashboardPage = async () => {
   const { userId } = await auth();
 
-  const userData = await UserModel.findOne({ clerkId: userId });
+  const userData = await UserModel.findOne({ clerkId: userId }).populate("profile");
   console.log("user Data-->", userData);
   return (
     <div className="text-xl  ">
       <div className="text-2xl md:text-4xl font-bold tracking-wider">
         DASHBOARD
       </div>
-      <div className="md:w-10/11 w-[100%] mx-auto">
+      <div className="lg:w-10/11 w-[100%] mx-auto">
         <div className="flex flex-col md:flex-row justify-between">
           {/* user detail */}
           <div className="">
@@ -67,6 +68,66 @@ const UserDashboardPage = async () => {
               </div>
               <div className="text-md flex items-center mt-2 w-fit mx-auto">
                 {userData?.email}
+              </div>
+
+              <div className="mt-9">
+                {!userData.profile && (
+                  <CreateProfileModal userID={userData._id} />
+                )}
+                {userData.profile && (
+                  <div>
+                    <div className="bg-white shadow-2xl w-[500px] h-[250px] rounded-sm px-5 py-3">
+                      <div className="flex justify-center mb-5 ">
+                        <div>
+                          <div className="flex justify-center gap-x-3">
+                            <div>LoGO</div>
+                            <div>BOOK HIVE</div>
+                          </div>
+                          <div className="text-sm">Smart Library System</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-x-2 items-center">
+                        <div className="w-[25%] flex justify-center items-center">
+                          <Image
+                            src={userData?.imageURL}
+                            alt="user image"
+                            height={60}
+                            width={60}
+                            className="rounded-full"
+                          />
+                        </div>
+                        <div className="text-lg tracking-wide w-[75%]">
+                          <div className="w-[70%] ">
+                            <div className="flex justify-between">
+                              <div className="w-[50%]">Name</div>
+                              <div className="w-[50%] text-start">{userData.userName}</div>
+                            </div>
+
+                            <div className="flex justify-between">
+                              <div className="w-[50%]">Address</div>
+                              <div className="w-[50%] text-start">{userData.profile.address}</div>
+                            </div>
+
+                            <div className="flex justify-between">
+                              <div className="w-[50%]">Contact</div>
+                              <div className="w-[50%] text-start">{userData.profile.phoneNumber}</div>
+                            </div>
+
+                            <div className="flex justify-between">
+                              <div className="w-[50%]">Date of Issue</div>
+                              <div className="w-[50%] text-start">{new Date(userData?.createdAt).toLocaleDateString()}</div>
+                            </div>
+
+                            <div className="flex justify-between">
+                              <div className="w-[50%]">Valid Till</div>
+                              <div className="w-[50%] text-start">{new Date(new Date(userData?.createdAt).setFullYear(new Date(userData?.createdAt).getFullYear() + 4)).toLocaleDateString()}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

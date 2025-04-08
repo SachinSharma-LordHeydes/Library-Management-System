@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import BooksModel from "@/app/models/booksModels";
+import borrowedBooksModel from "@/app/models/borrowedBooksModel";
+import ProfileModel from "@/app/models/profileModel";
 
 const userSchema = new mongoose.Schema(
   {
@@ -39,9 +40,13 @@ const userSchema = new mongoose.Schema(
     borrowedBooks: [
       {
         type: mongoose.Types.ObjectId,
-        ref: "BooksModel",
+        ref: "BorrowedBookModel",
       },
     ],
+    profile:{
+      type:mongoose.Types.ObjectId,
+      ref:"ProfileModel"
+    }
   },
   {
     timestamps: true,

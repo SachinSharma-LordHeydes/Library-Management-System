@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import ReservedBookModel from "@/app/models/reservedBookModel";
 
 const booksSchema = new mongoose.Schema(
   {
@@ -13,7 +14,7 @@ const booksSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    bookAuthor: {
+    bookAuthor: { 
       type: String,
       required: true,
     },
