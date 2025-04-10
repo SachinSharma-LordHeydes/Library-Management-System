@@ -2,72 +2,6 @@ import BooksModel from "@/app/models/booksModel";
 import dbConnect from "@/lib/dbConnect";
 import { NextResponse } from "next/server";
 
-// export async function POST(req) {
-//   try {
-//     await dbConnect();
-
-//     // Parse multipart form data
-//     const formData = await req.formData();
-//     const bookTitle = formData.get("bookTitle");
-//     const bookCatagory = formData.get("bookCatagory");
-//     const bookAuthor = formData.get("bookAuthor");
-//     const bookImageFile = formData.get("bookImageURL");
-//     const authorImageFile = formData.get("authorImageURL");
-//     const bookDescription = formData.get("bookDescription");
-//     const bookPublication = formData.get("bookPublication");
-//     const booksQuantity = formData.get("booksQuantity");
-
-//     if (
-//       !bookTitle ||
-//       !bookCatagory ||
-//       !bookAuthor ||
-//       !bookImageFile ||
-//       !authorImageFile ||
-//       !bookDescription ||
-//       !bookPublication ||
-//       !booksQuantity
-//     ) {
-//       return NextResponse.json({
-//         success: false,
-//         message: "All fields are required",
-//       });
-//     }
-
-//     const bookImageURL = "/path/to/uploaded/book-image.jpg"; // Replace with actual logic
-//     const authorImageURL = "/path/to/uploaded/author-image.jpg"; // Replace with actual logic
-
-//     const createBookResponse = await BooksModel.create({
-//       bookTitle,
-//       bookCatagory,
-//       bookAuthor,
-//       bookImageURL,
-//       authorImageURL,
-//       bookDescription,
-//       bookPublication,
-//       booksQuantity,
-//     });
-
-//     if (!createBookResponse) {
-//       return NextResponse.json({
-//         success: false,
-//         message: "Error occurred while creating book details",
-//       });
-//     }
-
-//     return NextResponse.json({
-//       success: true,
-//       message: "Book details created successfully",
-//       data: createBookResponse,
-//     });
-//   } catch (error) {
-//     return NextResponse.json({
-//       success: false,
-//       message: "Error occurred while adding book details",
-//       error: error.message || "Unknown error",
-//     });
-//   }
-// }
-
 export async function POST(req) {
   try {
     // Establish database connection
@@ -197,7 +131,7 @@ export async function GET(req) {
     if (bookID) {
       console.log("bookID received --->", bookID);
       const _id = bookID;
-      getBooksDetailResponse = await BooksModel.findById(_id);
+      getBooksDetailResponse = await BooksModel.findById(_id).populate("requests");
       if (!getBooksDetailResponse) {
         return NextResponse.json(
           { success: false, message: "Book not found" },
@@ -205,7 +139,7 @@ export async function GET(req) {
         );
       }
     } else {
-      getBooksDetailResponse = await BooksModel.find();
+      getBooksDetailResponse = await BooksModel.find().populate("requests");
       if (getBooksDetailResponse.length === 0) {
         return NextResponse.json(
           { success: false, message: "No books available in the database" },

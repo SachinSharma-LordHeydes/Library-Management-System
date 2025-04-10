@@ -14,8 +14,11 @@ import {
 } from "@/components/ui/table";
 import OverdueComponent from "../OverdueComponent";
 import AddbookSection from "../sections/dashboard/AddbookSection";
+import dbConnect from "@/lib/dbConnect";
 
 const AdminDashboardPage = async () => {
+
+  await dbConnect();
   const { userId } = await auth();
 
   const userData = await UserModel.find().populate({
@@ -34,11 +37,11 @@ const AdminDashboardPage = async () => {
   const studentData = userData.filter((data) => data.role === "student");
 
   const totalNumbersOfUsers = userData.length;
-  console.log("Total Number of users--->", totalNumbersOfUsers);
 
   // const overDuedBooks = bookData.filter((data) => data.cr);
 
   const splicedStudentData = studentData.slice(-5);
+  console.log("Spliced Student Data--->",splicedStudentData)
   const splicedUserData = userData.slice(-5);
 
   let totalBorrowedBooks = 0;
@@ -119,14 +122,14 @@ const AdminDashboardPage = async () => {
             <TableBody>
               {splicedStudentData.map((data, index) => (
                 <TableRow key={index} className={`text-black`}>
-                  <TableCell className="font-medium k">{data._id}</TableCell>
+                  <TableCell className="font-medium k">{data?._id}</TableCell>
                   <TableCell className="font-medium k">
-                    {data.userName}
+                    {data?.userName}
                   </TableCell>
                   <TableCell className="font-medium k">
-                    {data.borrowedBooks[0].bookID.bookTitle ? (
+                    {data.borrowedBooks[0]?.bookID?.bookTitle ? (
                       <div>
-                        {data.borrowedBooks[0].bookID.bookTitle}
+                        {data.borrowedBooks[0]?.bookID?.bookTitle}
                       </div>
                     ) : (
                       <div>unknown</div>

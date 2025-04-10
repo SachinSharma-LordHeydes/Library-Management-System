@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import ReservedBookModel from "@/app/models/reservedBookModel";
+import UserModel from "./userModel";
 
 const booksSchema = new mongoose.Schema(
   {
@@ -14,7 +14,7 @@ const booksSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    bookAuthor: { 
+    bookAuthor: {
       type: String,
       required: true,
     },
@@ -30,7 +30,6 @@ const booksSchema = new mongoose.Schema(
       required: true,
       type: String,
       minLength: 5,
-      maxLength: 100,
     },
     booksQuantity: {
       type: Number,
@@ -40,10 +39,13 @@ const booksSchema = new mongoose.Schema(
         return this.booksQuantity;
       },
     },
-    reserved: {
-      type: mongoose.Types.ObjectId,
-      ref: "ReservedBookModel",
-    },
+    requests: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "RequestedBookModel",
+        unique:true
+      }
+    ],
     createdAt: {
       type: Date,
       default: Date.now,
@@ -51,23 +53,8 @@ const booksSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
-
-
-booksSchema.pre("save", function (next) {
-  if (
-    this.status === "returned" &&
-    this.returnedDate &&
-    this.returnedDate > this.dueDate
-  ) {
-    const daysLate = Math.ceil(
-      (this.returnedDate - this.dueDate) / (1000 * 60 * 60 * 24)
-    );
-    this.fine = daysLate * 10; // 10 per day late
-  }
-  next();
-});
 
 const BooksModel =
   mongoose.models.BooksModel || mongoose.model("BooksModel", booksSchema);

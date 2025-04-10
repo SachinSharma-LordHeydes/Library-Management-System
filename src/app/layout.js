@@ -21,9 +21,10 @@ export default function RootLayout({ children }) {
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${inriaSans.className} antialiased min-w-screen min-h-screen overflow-x-hidden bg-[#E6DFC5] text-black`}
+          className={`${inriaSans.className} antialiased min-w-screen min-h-screen overflow-x-hidden bg-[#F5DEB3] text-black`}
         >
           {/* f9f9f9 */}
+          {/* E6DFC5 */}
           <NavBar />
           <div 
           // className="md:w-[80%]  sm:px-5 max-sm:px-5 mx-auto"

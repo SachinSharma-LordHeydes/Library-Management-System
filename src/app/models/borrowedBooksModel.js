@@ -3,18 +3,22 @@ import UserModel from "@/app/models/userModel";
 import BooksModel from "@/app/models/booksModel";
 
 const borrowedBookSchema = new mongoose.Schema({
-  borrowerID: {
-    type: mongoose.Types.ObjectId,
-    ref: "UserModel",
-    required: true,
-    index: true,
-  },
-  bookID: {
-    type: mongoose.Types.ObjectId,
-    ref: "BooksModel",
-    required: true,
-    index: true,
-  },
+  borrowerID: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "UserModel",
+      required: true,
+      index: true,
+    }
+  ],
+  bookID: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "BooksModel",
+      required: true,
+      index: true,
+    }
+  ],
   borrowedDate: {
     type: Date,
     default: Date.now,
@@ -28,6 +32,9 @@ const borrowedBookSchema = new mongoose.Schema({
     default: function () {
       return new Date(Date.now() +60 * 1000);
     },
+  },
+  status:{
+    enum:["idont","pending","ihave"]
   },
   fine: {
     type: Number,

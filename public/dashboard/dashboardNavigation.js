@@ -10,7 +10,7 @@ export const dashboardNavigation=[
         role:"student",
     },
     {
-        Navigation:"Search Books",
+        Navigation:"Books",
         Link:"/dashboard/books",
         role:"student",
     },
@@ -20,8 +20,8 @@ export const dashboardNavigation=[
         role:"admin",
     },
     {
-        Navigation:"Provide Books",
-        Link:"/dashboard/provide",
+        Navigation:"Book Requests",
+        Link:"/dashboard/book_requests",
         role:"admin",
     },
     {
