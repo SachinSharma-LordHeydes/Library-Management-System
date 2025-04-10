@@ -1,7 +1,7 @@
 // components/PieChartComponent.jsx
 'use client';
 
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, } from 'recharts';
 
 const data = [
   { name: 'Overdue books', value: 5 },
@@ -26,6 +26,7 @@ export default function PieChartComponent() {
           outerRadius={110}
           fill="#8884d8"
           dataKey="value"
+          isAnimationActive={false} 
         >
           {data.map((entry, index) => (
             <Cell

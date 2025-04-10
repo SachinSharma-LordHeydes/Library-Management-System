@@ -1,8 +1,8 @@
 "use client";
 import { BackgroundGradientDemo } from "@/components/ui/BackgroundGradientDemo";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const ExploreBooks = ({api,limit,userID}) => {
+const ExploreBooks = ({ api, limit, userID }) => {
   const [books, setBooks] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -12,34 +12,34 @@ const ExploreBooks = ({api,limit,userID}) => {
   // Function to fetch data
   const fetchData = async () => {
     if (!hasMore || loading) return;
-    
+
     setLoading(true);
     try {
       const res = await fetch(
         `${api}?page=${page}&limit=${limit}&userID=${userID}`
         // `/api/books/detailOnScroll?page=${page}&limit=6`
       );
-      
+
       if (!res.ok) {
         throw new Error(`HTTP error! Status: ${res.status}`);
       }
-      
+
       const newBooks = await res.json();
 
-      console.log("new books--->",newBooks)
-      
+      console.log("new books--->", newBooks);
+
       if (newBooks.data && newBooks.data.length > 0) {
         // Filter out duplicates
         const uniqueNewBooks = newBooks.data.filter(
           (newBook) => !books.some((book) => book._id === newBook._id)
         );
-        
+
         if (uniqueNewBooks.length > 0) {
           setBooks((prevBooks) => [...prevBooks, ...uniqueNewBooks]);
         } else {
           setHasMore(false);
         }
-        
+
         if (newBooks.data.length < 6) {
           setHasMore(false);
         }
@@ -62,15 +62,15 @@ const ExploreBooks = ({api,limit,userID}) => {
   const lastBookElementRef = useCallback(
     (node) => {
       if (loading) return;
-      
+
       if (observer.current) observer.current.disconnect();
-      
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore && !loading) {
           setPage((prevPage) => prevPage + 1);
         }
       });
-      
+
       if (node) observer.current.observe(node);
     },
     [loading, hasMore]
@@ -83,7 +83,7 @@ const ExploreBooks = ({api,limit,userID}) => {
     }
   };
 
-  console.log("books----->",books)
+  console.log("books----->", books);
 
   return (
     <div className="w-full">
@@ -94,24 +94,30 @@ const ExploreBooks = ({api,limit,userID}) => {
             if (books.length === index + 1) {
               return (
                 <div ref={lastBookElementRef} key={book._id || index}>
-                  {book.bookID.length>0?<BackgroundGradientDemo data={book?.bookID[0]} />:<BackgroundGradientDemo data={book} />}
+                  {Array.isArray(book.bookID) && book.bookID.length > 0 ? (
+                    <BackgroundGradientDemo data={book?.bookID[0]} />
+                  ) : (
+                    <BackgroundGradientDemo data={book} />
+                  )}
                 </div>
               );
             } else {
-              return (
-                book.bookID.length>0?<BackgroundGradientDemo key={index} data={book?.bookID[0]} />:<BackgroundGradientDemo key={index} data={book} />
+              return Array.isArray(book.bookID) && book.bookID.length > 0 ? (
+                <BackgroundGradientDemo key={index} data={book?.bookID[0]} />
+              ) : (
+                <BackgroundGradientDemo key={index} data={book} />
               );
             }
           })}
         </div>
       </div>
-      
+
       {loading && (
         <div className="w-full text-center py-4">
           <p>Loading more books...</p>
         </div>
       )}
-      
+
       {!loading && hasMore && books.length > 0 && (
         <div className="w-full text-center py-4">
           <button
@@ -122,13 +128,13 @@ const ExploreBooks = ({api,limit,userID}) => {
           </button>
         </div>
       )}
-      
+
       {!hasMore && books.length > 0 && (
         <div className="w-full text-center py-4">
           <p>No more books to load</p>
         </div>
       )}
-      
+
       {!loading && books.length === 0 && (
         <div className="w-full text-center py-4">
           <p>No books found</p>

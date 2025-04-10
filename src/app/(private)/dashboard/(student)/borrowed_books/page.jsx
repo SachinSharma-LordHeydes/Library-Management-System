@@ -23,7 +23,7 @@ const borrowedBooksPage = async () => {
       </div>
 
       <div className="mt-16">
-        <ExploreBooks api={`/api/borrow/borrow_on_scroll`} limit={'5'} userID={userID._id}/>
+        <ExploreBooks api={`/api/borrow/borrow_on_scroll`} limit={'5'} userID={userID._id.toString()}/>
       </div>
     </div>
   );

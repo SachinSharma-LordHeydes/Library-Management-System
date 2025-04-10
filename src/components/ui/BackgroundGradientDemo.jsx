@@ -8,7 +8,7 @@ export function BackgroundGradientDemo({ data }) {
   console.log("gradient data--->",data)
   return (
     <div>
-      <BackgroundGradient className="rounded-[22px] h-[500px] max-w-sm p-4 sm:p-10 bg-white dark:bg-zinc-900">
+      <BackgroundGradient className="rounded-[22px] h-[500px] w-[400px] p-4 sm:p-10 bg-white dark:bg-zinc-900">
         <div className="flex flex-col justify-between h-full">
           <div className="flex justify-center ">
             <Image
