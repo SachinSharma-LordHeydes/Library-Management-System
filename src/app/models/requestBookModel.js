@@ -22,11 +22,10 @@ const requestBookSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["success",'pending','not-requested'],
-    default:"not-requested"
+    enum: ["success", "borrow_pending", "request_pending", "not-requested"],
+    default: "not-requested",
   },
 });
-
 
 const RequestedBookModel =
   mongoose.models.RequestedBookModel ||

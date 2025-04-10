@@ -120,54 +120,25 @@ export async function DELETE(req) {
 }
 
 //get book detail by ID and Get all books Details
-export async function GET(req) {
+export async function GET(request) {
   try {
     await dbConnect();
-
-    const bookID = req.nextUrl.searchParams.get("bookID");
-
-    let getBooksDetailResponse;
-
-    if (bookID) {
-      console.log("bookID received --->", bookID);
-      const _id = bookID;
-      getBooksDetailResponse = await BooksModel.findById(_id).populate("requests");
-      if (!getBooksDetailResponse) {
-        return NextResponse.json(
-          { success: false, message: "Book not found" },
-          { status: 404 }
-        );
-      }
-    } else {
-      getBooksDetailResponse = await BooksModel.find().populate("requests");
-      if (getBooksDetailResponse.length === 0) {
-        return NextResponse.json(
-          { success: false, message: "No books available in the database" },
-          { status: 404 }
-        );
-      }
+    const { searchParams } = new URL(request.url);
+    const bookID = searchParams.get("bookID");
+    
+    if (!bookID) {
+      return NextResponse.json({ success: false, message: "Book ID is required" }, { status: 400 });
     }
-
-    console.log("Fetched Book(s) Response --->", getBooksDetailResponse);
-
-    return NextResponse.json(
-      {
-        success: true,
-        message: bookID
-          ? "Successfully fetched book details"
-          : "Successfully fetched all books",
-        data: getBooksDetailResponse,
-      },
-      { status: 200 }
-    );
+    
+    const book = await BooksModel.findById(bookID);
+    
+    if (!book) {
+      return NextResponse.json({ success: false, message: "Book not found" }, { status: 404 });
+    }
+    
+    return NextResponse.json({ success: true, data: book });
   } catch (error) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Error occurred while fetching book details",
-        error: error.message,
-      },
-      { status: 500 }
-    );
+    console.error("Error fetching book:", error);
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }

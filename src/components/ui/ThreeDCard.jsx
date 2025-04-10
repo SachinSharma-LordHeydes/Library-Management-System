@@ -7,59 +7,94 @@ import { CardBody, CardContainer, CardItem } from "../ui/3d-card";
 import { Button } from "./button";
 
 export function ThreeDCard({ data, userID, requestBookStatus }) {
-  const [status, setStatus] = useState(requestBookStatus);
 
-  const handleRequestToggle = async (e) => {
-    if (e.target.innerHTML === "Request to borrow") {
-      try {
-        const res = await fetch("/api/request", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            requestedBy: userID,
-            requestedBook: data._id,
-            status: "pending",
-          }),
-        });
+  console.log("3D card---->",data, userID, requestBookStatus)
+  const [requestStatus, setRequestStatus] = useState(
+    requestBookStatus?.status || "not-requested"
+  );
 
-        const result = await res.json();
-        console.log("API result:", result);
+  const handleRequestAction = async (actionType) => {
+    try {
+      const endpoint = "/api/request";
+      let body = {
+        requestedBy: userID,
+        requestedBook: data._id,
+        status: "request_pending",
+      };
 
-        if (result.success) {
-          if (status === "pending") {
-            setStatus("not-requested");
-          } else {
-            setStatus("pending");
-          }
-        } else {
-          alert(result.message);
-        }
-      } catch (err) {
-        console.error("Request error:", err);
+      // Set the appropriate status based on the action type
+      if (actionType === "cancel") {
+        body.status = "not-requested";
+      } else if (actionType === "return") {
+        body.status = "borrow_pending";
+      } else if (actionType === "request") {
+        body.status = "request_pending";
       }
-    } else {
-      try {
-        const res = await fetch("/api/request/decline", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            bookID:data._id,
-            userID:userID,
-            newStatus: "not-requested",
-          }),
-        });
-  
-        const result = await res.json();
-        console.log("Grant result:", result);
-        setStatus("not-requested")
-      } catch (err) {
-        console.error("Error:", err);
-      } finally {
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        setRequestStatus(body.status);
+      } else {
+        alert(result.message || "An error occurred");
       }
+    } catch (err) {
+      console.error("Request error:", err);
+      alert("Failed to process your request");
+    }
+  };
+
+  const renderButton = () => {
+    console.log("request Status--->", requestStatus);
+
+    // Book is unavailable
+    if (data.booksQuantity <= 0) {
+      return <Button disabled>Unavailable</Button>;
+    }
+
+    switch (requestStatus) {
+      case "not-requested":
+      case undefined:
+        return (
+          <Button onClick={() => handleRequestAction("request")}>
+            Request to Borrow Book
+          </Button>
+        );
+
+      case "request_pending":
+        return (
+          <Button onClick={() => handleRequestAction("cancel")}>
+            Cancel Borrow Book Request
+          </Button>
+        );
+
+      case "borrow_pending":
+        return (
+          <Button onClick={() => handleRequestAction("cancel")}>
+            Cancel Return Book Request
+          </Button>
+        );
+
+      case "success":
+        return (
+          <Button onClick={() => handleRequestAction("return")}>
+            Return Book
+          </Button>
+        );
+
+      default:
+        return (
+          <Button onClick={() => handleRequestAction("request")}>
+            Request to Borrow Book
+          </Button>
+        );
     }
   };
 
@@ -85,22 +120,7 @@ export function ThreeDCard({ data, userID, requestBookStatus }) {
         </CardItem>
 
         <div className="mt-9 flex justify-end px-5 hover:scale-97 transition-all">
-          {data.booksQuantity > 0 ? (
-            <div>
-              {(status === "not-requested" ||
-                status === "success" ||
-                status === undefined) && (
-                <Button onClick={handleRequestToggle}>Request to borrow</Button>
-              )}
-              {status === "pending" && (
-                <Button onClick={handleRequestToggle}>Cancel Request</Button>
-              )}
-            </div>
-          ) : (
-            <div>
-              <Button disabled>Unavailable</Button>
-            </div>
-          )}
+          {renderButton()}
         </div>
       </CardBody>
     </CardContainer>

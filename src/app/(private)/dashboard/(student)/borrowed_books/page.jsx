@@ -1,7 +1,6 @@
 import BorrowedBookModel from "@/app/models/borrowedBooksModel";
 import UserModel from "@/app/models/userModel";
 import ExploreBooks from "@/components/sections/books/ExploreBooks";
-import { BackgroundGradientDemo } from "@/components/ui/BackgroundGradientDemo";
 import dbConnect from "@/lib/dbConnect";
 import { auth } from "@clerk/nextjs/server";
 

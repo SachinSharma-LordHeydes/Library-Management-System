@@ -9,7 +9,7 @@ const GrantAccessButton = ({ bookID, userID, onGrantSuccess }) => {
   const handleGrant = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/request/grant", {
+      const res = await fetch("/api/request/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

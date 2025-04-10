@@ -6,35 +6,39 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     await dbConnect();
-    const { borrowerID, bookID } = await req.json();
-    if (!borrowerID || !bookID) {
+    const { borrowerID, bookID ,status} = await req.json();
+    if (!borrowerID || !bookID || ! status) {
       return NextResponse.json({
         success: false,
         message: "All fields are required",
         fields: {
           borrowerID,
           bookID,
+          status
         },
       });
     }
 
-    const borrowBoookResponse=await BorrowedBookModel.create({borrowerID,bookID})
+    const borrowBoookResponse = await BorrowedBookModel.create({
+      borrowerID,
+      bookID,
+      status
+    });
 
-    console.log("borrowed book response--->",borrowBoookResponse)
+    console.log("borrowed book response--->", borrowBoookResponse);
 
-    if(!borrowBoookResponse){
+    if (!borrowBoookResponse) {
       return NextResponse.json({
-        success:false,
-        message:"Unable to borrow book",
-      })
+        success: false,
+        message: "Unable to borrow book",
+      });
     }
 
-    if(borrowBoookResponse){
+    if (borrowBoookResponse) {
       await UserModel.findByIdAndUpdate(borrowerID, {
         $push: { borrowedBooks: borrowBoookResponse._id },
       });
     }
-
 
     return NextResponse.json({
       success: true,

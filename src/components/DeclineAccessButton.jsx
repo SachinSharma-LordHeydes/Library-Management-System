@@ -9,7 +9,7 @@ const DeclineccessButton = ({ bookID, userID, onGrantSuccess }) => {
   const handleGrant = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/request/decline", {
+      const res = await fetch("/api/request/admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
